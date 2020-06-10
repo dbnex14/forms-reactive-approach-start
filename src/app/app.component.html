@@ -1,28 +1,67 @@
 <div class="container">
   <div class="row">
     <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
-      <form>
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="email">email</label>
-          <input
-            type="text"
-            id="email"
-            class="form-control">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <div formGroupName="userData">
+          <div class="form-group">
+            <!--Note use of formControlname in below cases.  One is using it as it is
+                and passing string name of control; other uses it as property binding
+                in which case we have to pass name in both double and single quotes;
+                otherwise, it will search for the property called username and we dont
+                have that property. -->
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              class="form-control">
+            <span 
+                *ngIf="!signupForm.get('userData.username').valid && signupForm.get('userData.username').touched"
+                class="help-block">Please enter a valid user name!</span>
+          </div>
+          <div class="form-group">
+            <label for="email">email</label>
+            <input
+              type="text"
+              id="email"
+              [formControlName]="'email'"
+              class="form-control">
+            <span 
+              *ngIf="!signupForm.get('userData.email').valid && signupForm.get('userData.email').touched"
+              class="help-block">Please enter a valid email!</span>
+          </div>
         </div>
         <div class="radio" *ngFor="let gender of genders">
           <label>
             <input
               type="radio"
+              formControlName="gender"
               [value]="gender">{{ gender }}
           </label>
         </div>
+        <div formArrayName="hobbies">
+          <!-- here we want to allow user to dynamically add controls.  Note
+          how we explicitly say that our button is of type button here.  That 
+          is because we want to make sure this button does not accidentally
+          submit the whole form.  When user clicks button, we want to dynamically
+          add a form contorl here to an array.  Note how we use formArrayName
+          to sync this <div> with the hobbies array from ts file. Note use of
+          formControlName property binding to bind to the index of array.  
+          This is very important because we still need to synchronize this
+          input with the dynamically created FormControl in ts file. -->
+          <h4>Your Hobbies</h4>
+          <button class="btn btn-default" type="button"
+            (click)="onAddHobby()">Add Hobby</button>
+          <!-- and now we can loop through our hobbies to add them. -->
+          <div 
+            class="form-group" 
+            *ngFor="let hobbyContol of controls; let i=index">
+            <input type="text" class="form-control" [formControlName]="i">
+          </div>
+        </div>
+        <span 
+          *ngIf="!signupForm.valid && signupForm.touched"
+          class="help-block">Please enter a valid data!</span>
         <button class="btn btn-primary" type="submit">Submit</button>
       </form>
     </div>
