@@ -49,10 +49,41 @@ export class AppComponent implements OnInit {
       // here we add FormArray to add group of controls
       'hobbies': new FormArray([])
     });
+
+    // Here we show how we can track form valueChanges observable. If you now change anything on form
+    // like start typing user name, on every changes, you will see this value printed on console.
+    this.signupForm.valueChanges.subscribe(
+      (value) => console.log(value)
+    )
+    // same for status changes
+    this.signupForm.statusChanges.subscribe(
+      (status) => console.log(status)
+    )
+
+    // Let's also demo how can you update form values by yourself.  setValue will set entire form
+    // like we did below
+    this.signupForm.setValue({
+      'userData': {
+        'username': 'dino',
+        'email': 'dino@test.com'
+      },
+      'gender': 'male',
+      'hobbies': []
+    });
+    // patchValue will only update part of the form, the rest will stay not overriden
+    this.signupForm.patchValue({
+      'userData': {
+        'username': 'amira'
+      }
+    });
   }
 
   onSubmit() {
     console.log(this.signupForm);
+    // and if you want to reset the form after submitting which will clear controls and form states.
+    // Note that you could also pass an object to reset() to reset to specific values, say you dont
+    // want to clear radio buttons.
+    this.signupForm.reset();
   }
 
   onAddHobby() {
